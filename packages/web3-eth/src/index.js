@@ -42,23 +42,23 @@ var formatter = helpers.formatters;
 
 
 var blockCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? "eth_getBlockByHash" : "eth_getBlockByNumber";
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? "etrue_getBlockByHash" : "etrue_getBlockByNumber";
 };
 
 var transactionFromBlockCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'eth_getTransactionByBlockHashAndIndex' : 'eth_getTransactionByBlockNumberAndIndex';
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getTransactionByBlockHashAndIndex' : 'etrue_getTransactionByBlockNumberAndIndex';
 };
 
 var uncleCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'eth_getUncleByBlockHashAndIndex' : 'eth_getUncleByBlockNumberAndIndex';
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleByBlockHashAndIndex' : 'etrue_getUncleByBlockNumberAndIndex';
 };
 
 var getBlockTransactionCountCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'eth_getBlockTransactionCountByHash' : 'eth_getBlockTransactionCountByNumber';
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getBlockTransactionCountByHash' : 'etrue_getBlockTransactionCountByNumber';
 };
 
 var uncleCountCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'eth_getUncleCountByBlockHash' : 'eth_getUncleCountByBlockNumber';
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleCountByBlockHash' : 'etrue_getUncleCountByBlockNumber';
 };
 
 
@@ -191,65 +191,65 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getProtocolVersion',
-            call: 'eth_protocolVersion',
+            call: 'etrue_protocolVersion',
             params: 0
         }),
         new Method({
             name: 'getCoinbase',
-            call: 'eth_coinbase',
+            call: 'etrue_coinbase',
             params: 0
         }),
         new Method({
             name: 'isMining',
-            call: 'eth_mining',
+            call: 'etrue_mining',
             params: 0
         }),
         new Method({
             name: 'getHashrate',
-            call: 'eth_hashrate',
+            call: 'etrue_hashrate',
             params: 0,
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'isSyncing',
-            call: 'eth_syncing',
+            call: 'etrue_syncing',
             params: 0,
             outputFormatter: formatter.outputSyncingFormatter
         }),
         new Method({
             name: 'getGasPrice',
-            call: 'eth_gasPrice',
+            call: 'etrue_gasPrice',
             params: 0,
             outputFormatter: formatter.outputBigNumberFormatter
         }),
         new Method({
             name: 'getAccounts',
-            call: 'eth_accounts',
+            call: 'etrue_accounts',
             params: 0,
             outputFormatter: utils.toChecksumAddress
         }),
         new Method({
             name: 'getBlockNumber',
-            call: 'eth_blockNumber',
+            call: 'etrue_blockNumber',
             params: 0,
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'getBalance',
-            call: 'eth_getBalance',
+            call: 'etrue_getBalance',
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter],
             outputFormatter: formatter.outputBigNumberFormatter
         }),
         new Method({
             name: 'getStorageAt',
-            call: 'eth_getStorageAt',
+            call: 'etrue_getStorageAt',
             params: 3,
             inputFormatter: [formatter.inputAddressFormatter, utils.numberToHex, formatter.inputDefaultBlockNumberFormatter]
         }),
         new Method({
             name: 'getCode',
-            call: 'eth_getCode',
+            call: 'etrue_getCode',
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter]
         }),
@@ -284,7 +284,7 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getTransaction',
-            call: 'eth_getTransactionByHash',
+            call: 'etrue_getTransactionByHash',
             params: 1,
             inputFormatter: [null],
             outputFormatter: formatter.outputTransactionFormatter
@@ -298,39 +298,39 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getTransactionReceipt',
-            call: 'eth_getTransactionReceipt',
+            call: 'etrue_getTransactionReceipt',
             params: 1,
             inputFormatter: [null],
             outputFormatter: formatter.outputTransactionReceiptFormatter
         }),
         new Method({
             name: 'getTransactionCount',
-            call: 'eth_getTransactionCount',
+            call: 'etrue_getTransactionCount',
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'sendSignedTransaction',
-            call: 'eth_sendRawTransaction',
+            call: 'etrue_sendRawTransaction',
             params: 1,
             inputFormatter: [null]
         }),
         new Method({
             name: 'signTransaction',
-            call: 'eth_signTransaction',
+            call: 'etrue_signTransaction',
             params: 1,
             inputFormatter: [formatter.inputTransactionFormatter]
         }),
         new Method({
             name: 'sendTransaction',
-            call: 'eth_sendTransaction',
+            call: 'etrue_sendTransaction',
             params: 1,
             inputFormatter: [formatter.inputTransactionFormatter]
         }),
         new Method({
             name: 'sign',
-            call: 'eth_sign',
+            call: 'etrue_sign',
             params: 2,
             inputFormatter: [formatter.inputSignFormatter, formatter.inputAddressFormatter],
             transformPayload: function (payload) {
@@ -340,30 +340,30 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'call',
-            call: 'eth_call',
+            call: 'etrue_call',
             params: 2,
             inputFormatter: [formatter.inputCallFormatter, formatter.inputDefaultBlockNumberFormatter]
         }),
         new Method({
             name: 'estimateGas',
-            call: 'eth_estimateGas',
+            call: 'etrue_estimateGas',
             params: 1,
             inputFormatter: [formatter.inputCallFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'submitWork',
-            call: 'eth_submitWork',
+            call: 'etrue_submitWork',
             params: 3
         }),
         new Method({
             name: 'getWork',
-            call: 'eth_getWork',
+            call: 'etrue_getWork',
             params: 0
         }),
         new Method({
             name: 'getPastLogs',
-            call: 'eth_getLogs',
+            call: 'etrue_getLogs',
             params: 1,
             inputFormatter: [formatter.inputLogFormatter],
             outputFormatter: formatter.outputLogFormatter
