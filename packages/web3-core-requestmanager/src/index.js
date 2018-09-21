@@ -47,6 +47,25 @@ var RequestManager = function RequestManager(provider) {
 
 
 
+var genCall = function(call) {
+    switch (this.type) {
+    case 'eth':
+        return 'eth_' + call;
+    case 'etrue':
+        return 'etrue_' + call;
+    default:
+        return 'eth_' + call;
+    }
+};
+
+var genCallWithJudge = function(args, asHash, asDefault) {
+    return (_.isString(args[0]) && args[0].indexOf('0x') === 0)
+        ? this.genCall(asHash)
+        : this.genCall(asDefault)
+};
+
+
+
 RequestManager.givenProvider = givenProvider;
 
 RequestManager.providers = {
@@ -63,7 +82,7 @@ RequestManager.providers = {
  * @method setProvider
  * @param {Object} p
  */
-RequestManager.prototype.setProvider = function (p, net) {
+RequestManager.prototype.setProvider = function (p, net, type) {
     var _this = this;
 
     // autodetect provider
@@ -84,6 +103,21 @@ RequestManager.prototype.setProvider = function (p, net) {
         } else if(p) {
             throw new Error('Can\'t autodetect provider for "'+ p +'"');
         }
+
+        if (typeof net === 'string') {
+            type = net;
+        }
+        console.log(type);
+        switch (type) {
+        case 'etrue':
+            p.type = 'etrue';
+            break;
+        case 'eth':
+        default:
+            p.type = 'eth';
+        }
+        p.genCall = genCall;
+        p.genCallWithJudge = genCallWithJudge;
     }
 
     // reset the old one before changing, if still connected

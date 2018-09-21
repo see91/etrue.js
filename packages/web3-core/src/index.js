@@ -54,14 +54,14 @@ module.exports = {
         // set requestmanager on package
         } else {
             pkg._requestManager = new requestManager.Manager();
-            pkg._requestManager.setProvider(args[0], args[1]);
+            pkg._requestManager.setProvider(args[0], args[1], args[2]);
         }
 
         // add givenProvider
         pkg.givenProvider = requestManager.Manager.givenProvider;
         pkg.providers = requestManager.Manager.providers;
 
-         pkg._provider =  pkg._requestManager.provider;
+        pkg._provider =  pkg._requestManager.provider;
 
         // add SETPROVIDER function (don't overwrite if already existing)
         if (!pkg.setProvider) {

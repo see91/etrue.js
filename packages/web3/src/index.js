@@ -28,6 +28,7 @@
 "use strict";
 
 
+var _ = require('underscore');
 var version = require('../package.json').version;
 var core = require('web3-core');
 var Eth = require('web3-eth');
@@ -52,12 +53,12 @@ var Web3 = function Web3() {
 
     // overwrite package setProvider
     var setProvider = this.setProvider;
-    this.setProvider = function (provider, net) {
+    this.setProvider = function () {
         setProvider.apply(_this, arguments);
 
-        this.eth.setProvider(provider, net);
-        this.shh.setProvider(provider, net);
-        this.bzz.setProvider(provider);
+        this.eth.setProvider(_this.currentProvider);
+        this.shh.setProvider(_this.currentProvider);
+        this.bzz.setProvider(_this.currentProvider);
 
         return true;
     };

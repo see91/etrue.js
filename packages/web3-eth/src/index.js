@@ -41,25 +41,26 @@ var getNetworkType = require('./getNetworkType.js');
 var formatter = helpers.formatters;
 
 
-var blockCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? "etrue_getBlockByHash" : "etrue_getBlockByNumber";
-};
+// var blockCall = function (args) {
+//     return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? "etrue_getBlockByHash" : "etrue_getBlockByNumber";
+// };
 
-var transactionFromBlockCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getTransactionByBlockHashAndIndex' : 'etrue_getTransactionByBlockNumberAndIndex';
-};
+// var transactionFromBlockCall = function (args) {
+//     return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getTransactionByBlockHashAndIndex' : 'etrue_getTransactionByBlockNumberAndIndex';
+// };
 
-var uncleCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleByBlockHashAndIndex' : 'etrue_getUncleByBlockNumberAndIndex';
-};
+// var uncleCall = function (args) {
+//     return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleByBlockHashAndIndex' : 'etrue_getUncleByBlockNumberAndIndex';
+// };
 
-var getBlockTransactionCountCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getBlockTransactionCountByHash' : 'etrue_getBlockTransactionCountByNumber';
-};
+// var getBlockTransactionCountCall = function (args) {
+//     return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getBlockTransactionCountByHash' : 'etrue_getBlockTransactionCountByNumber';
+// };
 
-var uncleCountCall = function (args) {
-    return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleCountByBlockHash' : 'etrue_getUncleCountByBlockNumber';
-};
+// var uncleCountCall = function (args) {
+//     return (_.isString(args[0]) && args[0].indexOf('0x') === 0) ? 'etrue_getUncleCountByBlockHash' : 'etrue_getUncleCountByBlockNumber';
+// };
+
 
 
 var Eth = function Eth() {
@@ -191,78 +192,78 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getProtocolVersion',
-            call: 'etrue_protocolVersion',
+            call: 'eth_protocolVersion',
             params: 0
         }),
         new Method({
             name: 'getCoinbase',
-            call: 'etrue_coinbase',
+            call: () => _this.currentProvider.genCall('coinbase'),
             params: 0
         }),
         new Method({
             name: 'isMining',
-            call: 'etrue_mining',
+            call: () => _this.currentProvider.genCall('mining'),
             params: 0
         }),
         new Method({
             name: 'getHashrate',
-            call: 'etrue_hashrate',
+            call: () => _this.currentProvider.genCall('hashrate'),
             params: 0,
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'isSyncing',
-            call: 'etrue_syncing',
+            call: () => _this.currentProvider.genCall('syncing'),
             params: 0,
             outputFormatter: formatter.outputSyncingFormatter
         }),
         new Method({
             name: 'getGasPrice',
-            call: 'etrue_gasPrice',
+            call: () => _this.currentProvider.genCall('gasPrice'),
             params: 0,
             outputFormatter: formatter.outputBigNumberFormatter
         }),
         new Method({
             name: 'getAccounts',
-            call: 'etrue_accounts',
+            call: () => _this.currentProvider.genCall('accounts'),
             params: 0,
             outputFormatter: utils.toChecksumAddress
         }),
         new Method({
             name: 'getBlockNumber',
-            call: 'etrue_blockNumber',
+            call: () => _this.currentProvider.genCall('blockNumber'),
             params: 0,
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'getBalance',
-            call: 'etrue_getBalance',
+            call: () => _this.currentProvider.genCall('getBalance'),
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter],
             outputFormatter: formatter.outputBigNumberFormatter
         }),
         new Method({
             name: 'getStorageAt',
-            call: 'etrue_getStorageAt',
+            call: () => _this.currentProvider.genCall('getStorageAt'),
             params: 3,
             inputFormatter: [formatter.inputAddressFormatter, utils.numberToHex, formatter.inputDefaultBlockNumberFormatter]
         }),
         new Method({
             name: 'getCode',
-            call: 'etrue_getCode',
+            call: () => _this.currentProvider.genCall('getCode'),
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter]
         }),
         new Method({
             name: 'getBlock',
-            call: blockCall,
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getBlockByHash', 'getBlockByNumber'),
             params: 2,
             inputFormatter: [formatter.inputBlockNumberFormatter, function (val) { return !!val; }],
             outputFormatter: formatter.outputBlockFormatter
         }),
         new Method({
             name: 'getUncle',
-            call: uncleCall,
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getUncleByBlockHashAndIndex', 'getUncleByBlockNumberAndIndex'),
             params: 2,
             inputFormatter: [formatter.inputBlockNumberFormatter, utils.numberToHex],
             outputFormatter: formatter.outputBlockFormatter,
@@ -270,67 +271,67 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getBlockTransactionCount',
-            call: getBlockTransactionCountCall,
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getBlockTransactionCountByHash', 'getBlockTransactionCountByNumber'),
             params: 1,
             inputFormatter: [formatter.inputBlockNumberFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'getBlockUncleCount',
-            call: uncleCountCall,
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getUncleCountByBlockHash', 'getUncleCountByBlockNumber'),
             params: 1,
             inputFormatter: [formatter.inputBlockNumberFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'getTransaction',
-            call: 'etrue_getTransactionByHash',
+            call: () => _this.currentProvider.genCall('getTransactionByHash'),
             params: 1,
             inputFormatter: [null],
             outputFormatter: formatter.outputTransactionFormatter
         }),
         new Method({
             name: 'getTransactionFromBlock',
-            call: transactionFromBlockCall,
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getTransactionByBlockHashAndIndex', 'getTransactionByBlockNumberAndIndex'),
             params: 2,
             inputFormatter: [formatter.inputBlockNumberFormatter, utils.numberToHex],
             outputFormatter: formatter.outputTransactionFormatter
         }),
         new Method({
             name: 'getTransactionReceipt',
-            call: 'etrue_getTransactionReceipt',
+            call: () => _this.currentProvider.genCall('getTransactionReceipt'),
             params: 1,
             inputFormatter: [null],
             outputFormatter: formatter.outputTransactionReceiptFormatter
         }),
         new Method({
             name: 'getTransactionCount',
-            call: 'etrue_getTransactionCount',
+            call: () => _this.currentProvider.genCall('getTransactionCount'),
             params: 2,
             inputFormatter: [formatter.inputAddressFormatter, formatter.inputDefaultBlockNumberFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'sendSignedTransaction',
-            call: 'etrue_sendRawTransaction',
+            call: () => _this.currentProvider.genCall('sendRawTransaction'),
             params: 1,
             inputFormatter: [null]
         }),
         new Method({
             name: 'signTransaction',
-            call: 'etrue_signTransaction',
+            call: () => _this.currentProvider.genCall('signTransaction'),
             params: 1,
             inputFormatter: [formatter.inputTransactionFormatter]
         }),
         new Method({
             name: 'sendTransaction',
-            call: 'etrue_sendTransaction',
+            call: () => _this.currentProvider.genCall('sendTransaction'),
             params: 1,
             inputFormatter: [formatter.inputTransactionFormatter]
         }),
         new Method({
             name: 'sign',
-            call: 'etrue_sign',
+            call: () => _this.currentProvider.genCall('sign'),
             params: 2,
             inputFormatter: [formatter.inputSignFormatter, formatter.inputAddressFormatter],
             transformPayload: function (payload) {
@@ -340,30 +341,30 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'call',
-            call: 'etrue_call',
+            call: () => _this.currentProvider.genCall('call'),
             params: 2,
             inputFormatter: [formatter.inputCallFormatter, formatter.inputDefaultBlockNumberFormatter]
         }),
         new Method({
             name: 'estimateGas',
-            call: 'etrue_estimateGas',
+            call: () => _this.currentProvider.genCall('estimateGas'),
             params: 1,
             inputFormatter: [formatter.inputCallFormatter],
             outputFormatter: utils.hexToNumber
         }),
         new Method({
             name: 'submitWork',
-            call: 'etrue_submitWork',
+            call: () => _this.currentProvider.genCall('submitWork'),
             params: 3
         }),
         new Method({
             name: 'getWork',
-            call: 'etrue_getWork',
+            call: () => _this.currentProvider.genCall('getWork'),
             params: 0
         }),
         new Method({
             name: 'getPastLogs',
-            call: 'etrue_getLogs',
+            call: () => _this.currentProvider.genCall('getLogs'),
             params: 1,
             inputFormatter: [formatter.inputLogFormatter],
             outputFormatter: formatter.outputLogFormatter
