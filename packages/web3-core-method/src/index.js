@@ -49,6 +49,9 @@ var Method = function Method(options) {
     this.extraFormatters = options.extraFormatters;
 
     this.requestManager = options.requestManager;
+    this.provider = options.requestManager ? options.requestManager.provider : {
+        genCall: input => 'etrue_' + input
+    };
 
     // reference to eth.accounts
     this.accounts = options.accounts;
@@ -209,14 +212,14 @@ Method.prototype._confirmTransaction = function (defer, result, payload) {
     var _ethereumCalls = [
         new Method({
             name: 'getTransactionReceipt',
-            call: 'etrue_getTransactionReceipt',
+            call: () => this.provider.genCall('getTransactionReceipt'),
             params: 1,
             inputFormatter: [null],
             outputFormatter: formatters.outputTransactionReceiptFormatter
         }),
         new Method({
             name: 'getCode',
-            call: 'etrue_getCode',
+            call: () => this.provider.genCall('getCode'),
             params: 2,
             inputFormatter: [formatters.inputAddressFormatter, formatters.inputDefaultBlockNumberFormatter]
         }),
@@ -459,7 +462,7 @@ var getWallet = function(from, accounts) {
 
 Method.prototype.buildCall = function() {
     var method = this,
-        isSendTx = (method.call === 'etrue_sendTransaction' || method.call === 'etrue_sendRawTransaction'); // || method.call === 'personal_sendTransaction'
+        isSendTx = (method.call === this.provider.genCall('sendTransaction') || method.call === this.provider.genCall('sendRawTransaction')); // || method.call === 'personal_sendTransaction'
 
     // actual send function
     var send = function () {
@@ -512,7 +515,7 @@ Method.prototype.buildCall = function() {
         var sendSignedTx = function(sign){
 
             var signedPayload = _.extend({}, payload, {
-                method: 'etrue_sendRawTransaction',
+                method: () => this.provider.genCall('sendRawTransaction'),
                 params: [sign.rawTransaction]
             });
 
@@ -525,8 +528,7 @@ Method.prototype.buildCall = function() {
             if (method && method.accounts && method.accounts.wallet && method.accounts.wallet.length) {
                 var wallet;
 
-                // etrue_SENDTRANSACTION
-                if (payload.method === 'etrue_sendTransaction') {
+                if (payload.method === this.provider.genCall('sendTransaction')) {
                     var tx = payload.params[0];
                     wallet = getWallet((_.isObject(tx)) ? tx.from : null, method.accounts);
 
@@ -536,8 +538,7 @@ Method.prototype.buildCall = function() {
                         return method.accounts.signTransaction(_.omit(tx, 'from'), wallet.privateKey).then(sendSignedTx);
                     }
 
-                    // etrue_SIGN
-                } else if (payload.method === 'etrue_sign') {
+                } else if (payload.method === this.provider.genCall('sign')) {
                     var data = payload.params[1];
                     wallet = getWallet(payload.params[0], method.accounts);
 
@@ -565,7 +566,7 @@ Method.prototype.buildCall = function() {
 
             var getGasPrice = (new Method({
                 name: 'getGasPrice',
-                call: 'etrue_gasPrice',
+                call: () => this.provider.genCall('gasPrice'),
                 params: 0
             })).createFunction(method.requestManager);
 

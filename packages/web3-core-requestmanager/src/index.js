@@ -107,7 +107,6 @@ RequestManager.prototype.setProvider = function (p, net, type) {
         if (typeof net === 'string') {
             type = net;
         }
-        console.log(type);
         switch (type) {
         case 'eth':
             p.type = 'eth';

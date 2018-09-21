@@ -75,12 +75,12 @@ var Accounts = function Accounts() {
         }),
         new Method({
             name: 'getGasPrice',
-            call: 'etrue_gasPrice',
+            call: () => _this.currentProvider.genCall('gasPrice'),
             params: 0
         }),
         new Method({
             name: 'getTransactionCount',
-            call: 'etrue_getTransactionCount',
+            call: () => _this.currentProvider.genCall('getTransactionCount'),
             params: 2,
             inputFormatter: [function (address) {
                 if (utils.isAddress(address)) {
