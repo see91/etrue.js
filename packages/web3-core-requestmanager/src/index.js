@@ -109,12 +109,12 @@ RequestManager.prototype.setProvider = function (p, net, type) {
         }
         console.log(type);
         switch (type) {
-        case 'etrue':
-            p.type = 'etrue';
-            break;
         case 'eth':
-        default:
             p.type = 'eth';
+            break;
+        case 'etrue':
+        default:
+            p.type = 'etrue';
         }
         p.genCall = genCall;
         p.genCallWithJudge = genCallWithJudge;
