@@ -103,7 +103,9 @@ RequestManager.prototype.setProvider = function (p, net, type) {
         } else if(p) {
             throw new Error('Can\'t autodetect provider for "'+ p +'"');
         }
+    }
 
+    if (p) {
         if (typeof net === 'string') {
             type = net;
         }
