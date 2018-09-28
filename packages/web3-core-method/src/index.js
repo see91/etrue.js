@@ -461,7 +461,7 @@ var getWallet = function(from, accounts) {
 };
 
 Method.prototype.buildCall = function() {
-    var self = this
+    var _this = this
     var method = this,
         isSendTx = (method.call === this.provider.genCall('sendTransaction') || method.call === this.provider.genCall('sendRawTransaction')); // || method.call === 'personal_sendTransaction'
 
@@ -514,9 +514,8 @@ Method.prototype.buildCall = function() {
 
         // SENDS the SIGNED SIGNATURE
         var sendSignedTx = function(sign){
-
             var signedPayload = _.extend({}, payload, {
-                method: () => self.provider.genCall('sendRawTransaction'),
+                method: _this.provider.genCall('sendRawTransaction'),
                 params: [sign.rawTransaction]
             });
 
@@ -525,11 +524,10 @@ Method.prototype.buildCall = function() {
 
 
         var sendRequest = function(payload, method) {
-
             if (method && method.accounts && method.accounts.wallet && method.accounts.wallet.length) {
                 var wallet;
 
-                if (payload.method === self.provider.genCall('sendTransaction')) {
+                if (payload.method === _this.provider.genCall('sendTransaction')) {
                     var tx = payload.params[0];
                     wallet = getWallet((_.isObject(tx)) ? tx.from : null, method.accounts);
 
@@ -539,7 +537,7 @@ Method.prototype.buildCall = function() {
                         return method.accounts.signTransaction(_.omit(tx, 'from'), wallet.privateKey).then(sendSignedTx);
                     }
 
-                } else if (payload.method === self.provider.genCall('sign')) {
+                } else if (payload.method === _this.provider.genCall('sign')) {
                     var data = payload.params[1];
                     wallet = getWallet(payload.params[0], method.accounts);
 

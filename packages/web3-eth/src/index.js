@@ -192,7 +192,7 @@ var Eth = function Eth() {
         }),
         new Method({
             name: 'getProtocolVersion',
-            call: 'eth_protocolVersion',
+            call: () => _this.currentProvider.genCall('protocolVersion'),
             params: 0
         }),
         new Method({
