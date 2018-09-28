@@ -461,6 +461,7 @@ var getWallet = function(from, accounts) {
 };
 
 Method.prototype.buildCall = function() {
+    var self = this
     var method = this,
         isSendTx = (method.call === this.provider.genCall('sendTransaction') || method.call === this.provider.genCall('sendRawTransaction')); // || method.call === 'personal_sendTransaction'
 
@@ -515,7 +516,7 @@ Method.prototype.buildCall = function() {
         var sendSignedTx = function(sign){
 
             var signedPayload = _.extend({}, payload, {
-                method: () => this.provider.genCall('sendRawTransaction'),
+                method: () => self.provider.genCall('sendRawTransaction'),
                 params: [sign.rawTransaction]
             });
 
@@ -528,7 +529,7 @@ Method.prototype.buildCall = function() {
             if (method && method.accounts && method.accounts.wallet && method.accounts.wallet.length) {
                 var wallet;
 
-                if (payload.method === this.provider.genCall('sendTransaction')) {
+                if (payload.method === self.provider.genCall('sendTransaction')) {
                     var tx = payload.params[0];
                     wallet = getWallet((_.isObject(tx)) ? tx.from : null, method.accounts);
 
@@ -538,7 +539,7 @@ Method.prototype.buildCall = function() {
                         return method.accounts.signTransaction(_.omit(tx, 'from'), wallet.privateKey).then(sendSignedTx);
                     }
 
-                } else if (payload.method === this.provider.genCall('sign')) {
+                } else if (payload.method === self.provider.genCall('sign')) {
                     var data = payload.params[1];
                     wallet = getWallet(payload.params[0], method.accounts);
 
@@ -566,7 +567,7 @@ Method.prototype.buildCall = function() {
 
             var getGasPrice = (new Method({
                 name: 'getGasPrice',
-                call: () => this.provider.genCall('gasPrice'),
+                call: () => self.provider.genCall('gasPrice'),
                 params: 0
             })).createFunction(method.requestManager);
 
