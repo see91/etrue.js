@@ -777,10 +777,10 @@ Contract.prototype._executeMethod = function _executeMethod(){
 
         if(args.type === 'call') {
             payload.params.push(formatters.inputDefaultBlockNumberFormatter.call(this._parent, args.defaultBlock));
-            payload.method = () => this.currentProvider.genCall('call');
+            payload.method = this.currentProvider.genCall('call');
             payload.format = this._parent._decodeMethodReturn.bind(null, this._method.outputs);
         } else {
-            payload.method = () => this.currentProvider.genCall('sendTransaction');
+            payload.method = this.currentProvider.genCall('sendTransaction');
         }
 
         return payload;
@@ -792,7 +792,7 @@ Contract.prototype._executeMethod = function _executeMethod(){
 
                 var estimateGas = (new Method({
                     name: 'estimateGas',
-                    call: () => this.currentProvider.genCall('estimateGas'),
+                    call: () => _this.currentProvider.genCall('estimateGas'),
                     params: 1,
                     inputFormatter: [formatters.inputCallFormatter],
                     outputFormatter: utils.hexToNumber,
@@ -810,7 +810,7 @@ Contract.prototype._executeMethod = function _executeMethod(){
 
                 var call = (new Method({
                     name: 'call',
-                    call: () => this.currentProvider.genCall('call'),
+                    call: () => _this.currentProvider.genCall('call'),
                     params: 2,
                     inputFormatter: [formatters.inputCallFormatter, formatters.inputDefaultBlockNumberFormatter],
                     // add output formatter for decoding
@@ -884,7 +884,7 @@ Contract.prototype._executeMethod = function _executeMethod(){
 
                 var sendTransaction = (new Method({
                     name: 'sendTransaction',
-                    call: () => this.currentProvider.genCall('sendTransaction'),
+                    call: () => _this.currentProvider.genCall('sendTransaction'),
                     params: 1,
                     inputFormatter: [formatters.inputTransactionFormatter],
                     requestManager: _this._parent._requestManager,
