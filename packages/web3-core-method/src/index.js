@@ -55,6 +55,8 @@ var Method = function Method(options) {
 
     this.defaultBlock = options.defaultBlock || 'latest';
     this.defaultAccount = options.defaultAccount || null;
+
+    this.limit = options.limit;
 };
 
 Method.prototype.setRequestManager = function (requestManager, accounts) {
@@ -465,8 +467,16 @@ Method.prototype.buildCall = function() {
     // actual send function
     var send = function () {
         var defer = promiEvent(!isSendTx),
-            payload = method.toPayload(Array.prototype.slice.call(arguments));
+            payload = method.toPayload(Array.prototype.slice.call(arguments)),
+            provider = _this.requestManager.provider;
 
+        if (_this.limit && _this.limit !== provider.type) {
+            if (payload.callback) {
+                payload.callback(new Error(`method ${_this.name} is not available in ${provider.type} node mode`), null);
+            }
+            defer.reject(`method ${_this.name} is not available in ${provider.type} node mode`);
+            return defer.eventEmitter;
+        }
 
         // CALLBACK function
         var sendTxCallback = function (err, result) {
@@ -512,7 +522,7 @@ Method.prototype.buildCall = function() {
         // SENDS the SIGNED SIGNATURE
         var sendSignedTx = function(sign){
             var signedPayload = _.extend({}, payload, {
-                method: _this.requestManager.provider.genCall('sendRawTransaction'),
+                method: provider.genCall('sendRawTransaction'),
                 params: [sign.rawTransaction]
             });
 
@@ -523,7 +533,7 @@ Method.prototype.buildCall = function() {
         var sendRequest = function(payload, method) {
             if (method && method.accounts && method.accounts.wallet && method.accounts.wallet.length) {
                 var wallet;
-                if (payload.method === _this.requestManager.provider.genCall('sendTransaction')) {
+                if (payload.method === provider.genCall('sendTransaction')) {
                     var tx = payload.params[0];
                     wallet = getWallet((_.isObject(tx)) ? tx.from : null, method.accounts);
 
@@ -533,7 +543,7 @@ Method.prototype.buildCall = function() {
                         return method.accounts.signTransaction(_.omit(tx, 'from'), wallet.privateKey).then(sendSignedTx);
                     }
 
-                } else if (payload.method === _this.requestManager.provider.genCall('sign')) {
+                } else if (payload.method === provider.genCall('sign')) {
                     var data = payload.params[1];
                     wallet = getWallet(payload.params[0], method.accounts);
 
@@ -561,7 +571,7 @@ Method.prototype.buildCall = function() {
 
             var getGasPrice = (new Method({
                 name: 'getGasPrice',
-                call: () => _this.requestManager.provider.genCall('gasPrice'),
+                call: provider.genCall('gasPrice'),
                 params: 0
             })).createFunction(method.requestManager);
 

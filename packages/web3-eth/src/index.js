@@ -262,6 +262,14 @@ var Eth = function Eth() {
             outputFormatter: formatter.outputBlockFormatter
         }),
         new Method({
+            name: 'getSnail',
+            call: args => _this.currentProvider.genCallWithJudge(args, 'getSnailBlockByHash', 'getSnailBlockByNumber'),
+            params: 2,
+            limit: 'etrue',
+            inputFormatter: [formatter.inputBlockNumberFormatter, function (val) { return !!val; }],
+            outputFormatter: formatter.outputSnailFormatter
+        }),
+        new Method({
             name: 'getUncle',
             call: args => _this.currentProvider.genCallWithJudge(args, 'getUncleByBlockHashAndIndex', 'getUncleByBlockNumberAndIndex'),
             params: 2,

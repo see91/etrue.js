@@ -259,6 +259,38 @@ var outputBlockFormatter = function(block) {
 };
 
 /**
+ * Formats the output of a snail block to its proper values
+ *
+ * @method outputSnailFormatter
+ * @param {Object} block
+ * @returns {Object}
+*/
+var outputSnailFormatter = function(block) {
+
+    // transform to number
+    block.size = utils.hexToNumber(block.size);
+    block.timestamp = utils.hexToNumber(block.timestamp);
+    if(block.number !== null)
+        block.number = utils.hexToNumber(block.number);
+
+    block.difficulty = outputBigNumberFormatter(block.difficulty);
+    block.fruitDifficulty = outputBigNumberFormatter(block.fruitDifficulty);
+
+    block.beginFruitNumber = utils.hexToNumber(block.beginFruitNumber);
+    block.endFruitNumber = utils.hexToNumber(block.endFruitNumber);
+
+    if (_.isArray(block.fruits)) {
+        block.fruits.forEach(function(item){
+            if(!_.isString(item)) {
+                // TODO: Format full fruit data
+            }
+        });
+    }
+
+    return block;
+};
+
+/**
  * Formats the input of a log
  *
  * @method inputLogFormatter
@@ -436,6 +468,7 @@ module.exports = {
     outputTransactionFormatter: outputTransactionFormatter,
     outputTransactionReceiptFormatter: outputTransactionReceiptFormatter,
     outputBlockFormatter: outputBlockFormatter,
+    outputSnailFormatter: outputSnailFormatter,
     outputLogFormatter: outputLogFormatter,
     outputPostFormatter: outputPostFormatter,
     outputSyncingFormatter: outputSyncingFormatter
