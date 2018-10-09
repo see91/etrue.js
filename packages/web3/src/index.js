@@ -27,8 +27,6 @@
 
 "use strict";
 
-
-var _ = require('underscore');
 var version = require('../package.json').version;
 var core = require('web3-core');
 var Eth = require('web3-eth');
